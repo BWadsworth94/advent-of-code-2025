@@ -11,31 +11,19 @@
                            (comp
                             (fn [[_ move degree]]
                               [move (parse-long degree)])
-                            #(re-matches #"([L|R])(\d+)" %))))]
-    (reduce
-     (fn [[landings curr-degree :as acc] [move degree]]
-       (let [new-degree (if (= move "R")
-                          (+ degree curr-degree)
-                          (- degree curr-degree))]
-         ())
-       [[] 50]
-       instructions)))
+                            #(re-matches #"([L|R])(\d+)" %))))
+        {:keys [landings]} (reduce
+                            (fn [{:keys [current-position] :as acc} [move degree]]
+                              (let [new-position (if (= move "R")
+                                                   (+ current-position degree)
+                                                   (- current-position degree))]
+                                (-> acc
+                                    (update :landings conj new-position)
+                                    (assoc :current-position new-position))))
+                            {:landings []
+                             :current-position 50}
+                            instructions)]
+    (->> landings (filter #(zero? (mod % 100))) count)))
 
 (comment
-  (part-one (read-input-file "one"))
-  (part-one "L68
-L30
-R48
-L5
-R60
-L55
-L1
-L99
-R14
-L82"))
-
-;; 20 19 40 70 90 110 90
-
-(mod 200 100)
-
-(re-matches #"([L|R])(\d+)" "L3")
+  (part-one (read-input-file "one")))
