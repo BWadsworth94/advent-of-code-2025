@@ -1,4 +1,4 @@
-{:paths   ["src"]
+{:paths   ["src" "advent-of-code-2025-inputs"]
  :deps    {org.clojure/clojure  {:mvn/version "1.12.0"}}
  :aliases {:repl {:extra-deps  {cider/cider-nrepl {:mvn/version "0.26.0"}
                                 io.github.clojure/tools.build {:mvn/version "0.10.11"}}
