@@ -40,5 +40,43 @@
                  new-dial
                  (rest instructions)))))))
 
+(defn- ->zero-passes
+  "Checks every number between old-dial and new-dial to see
+   if n % 100 = 0, and if it does inc zero count.
+   if old-dial is = 0 to prevent double counting, it gets shifted
+   pos or neg towards new-dial.
+   
+   Maybe sometime soon ill actually try to solve this idomatically"
+  [old-dial new-dial]
+  ;; first impl real dum lol
+  (let [off-0-old-dial (if (zero? (mod old-dial 100))
+                         (if (< old-dial new-dial)
+                           (inc old-dial)
+                           (dec old-dial))
+                         old-dial)
+        [x y] (sort [off-0-old-dial new-dial])]
+    (reduce
+     (fn [acc i]
+       (if (zero? (mod i 100))
+         (inc acc)
+         acc))
+     0
+     (range x (inc y)))))
+
+(defn part-two
+  [input]
+  (let [instructions (parse-instructions input)]
+    (loop [zero-hit-cnt 0
+           dial 50
+           instructions instructions]
+      (if-not (first instructions)
+        zero-hit-cnt
+        (let [new-dial (rotate-dial dial (first instructions))
+              zero-passes (->zero-passes dial new-dial)]
+          (recur (+ zero-hit-cnt zero-passes)
+                 new-dial
+                 (rest instructions)))))))
+
 (comment
-  (part-one (read-input-file "one")))
+  (part-one (read-input-file "one"))
+  (part-two (read-input-file "one")))
