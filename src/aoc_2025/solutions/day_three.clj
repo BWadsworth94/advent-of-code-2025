@@ -29,8 +29,41 @@
             (comp combine-ints get-max-tuple)
             battery-rows))))
 
+(defn get-max-joltage
+  [bank]
+  (let [max-joltages (take 12 (reverse (sort bank)))
+        candidates (frequencies max-joltages)]
+    (loop [bank bank
+           available-batteries candidates
+           nums []]
+      (let [candidate (first bank)
+            matched? (get available-batteries candidate)]
+        (if candidate
+          (if (and matched? (not (zero? matched?)))
+            (recur
+             (rest bank)
+             (update available-batteries candidate dec)
+             (conj nums candidate))
+            (recur
+             (rest bank)
+             available-batteries
+             nums))
+          nums)))))
+
+
+
+(defn part-two
+  [input]
+  (let [battery-rows (->> (str/split-lines input)
+                          (map #(str/split % #""))
+                          (map #(map parse-long %)))
+        banks (map get-max-joltage battery-rows)]
+    
+    (apply + (map (comp parse-long str/join) banks))))
+
 (comment
   (part-one (read-input-file "three"))
+  (part-two (read-input-file "three"))
   )
 
 ;; 818181911112111
